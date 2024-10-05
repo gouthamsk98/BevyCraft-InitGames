@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Bevy Wasm Example</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden; /* Prevents scrolling */
+        width: 100%;
+        height: 100%;
+      }
+      canvas {
+        display: block;
+        width: 100vw !important; /* Full viewport width */
+        height: 100vh !important; /* Full viewport height */
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      const socket = new WebSocket("ws://localhost:8000");
+      socket.onmessage = function (event) {
+        if (event.data === "refresh") {
+          location.reload();
+        }
+      };
+    </script>
+    <script type="module">
+      import init from "./bevy-wasm.js";
+      init();
+    </script>
+  </body>
+</html>
