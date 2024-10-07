@@ -5,6 +5,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
+        .add_systems(Update, (scene::plane::add_frid, scene::plane::draw_cursor))
         .add_systems(Update, (mouse::mouse_input_system, keyboard::keyboard_input_system))
         .run();
 }

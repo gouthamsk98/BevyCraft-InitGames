@@ -28,3 +28,11 @@ pub struct MeshParameters {
     pub color: Color,
     pub position: Vec3,
 }
+pub enum CursorType {
+    Sphere,
+    Cuboid,
+    Circle,
+    Square,
+    Hash,
+    Plane,
+}

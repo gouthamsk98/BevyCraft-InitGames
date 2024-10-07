@@ -1,9 +1,15 @@
 // camera.rs
-use bevy::prelude::*;
+
+use bevy::{ prelude::*, render::camera::ScalingMode };
 
 pub fn spawn_camera(commands: &mut Commands) {
     commands.spawn(Camera3dBundle {
-        transform: Transform::from_xyz(-2.5, 4.5, 9.0).looking_at(Vec3::ZERO, Vec3::Y),
+        projection: (OrthographicProjection {
+            // 6 world units per window height.
+            scaling_mode: ScalingMode::FixedVertical(5.0),
+            ..default()
+        }).into(),
+        transform: Transform::from_xyz(5.0, 5.0, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
         ..default()
     });
 }
