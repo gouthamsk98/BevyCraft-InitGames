@@ -4,7 +4,7 @@
 cargo build --target wasm32-unknown-unknown --release
 
 # Run wasm-bindgen to generate the JS bindings
-wasm-bindgen --out-dir ./out --target web ./target/wasm32-unknown-unknown/release/bevy-wasm.wasm
+wasm-bindgen --out-dir ./out --target web ./target/wasm32-unknown-unknown/release/bevycraft.wasm
 
 # Run the server
 cargo server --path ./out &

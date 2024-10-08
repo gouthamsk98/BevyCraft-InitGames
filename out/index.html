@@ -21,12 +21,16 @@
   </head>
   <body>
     <script>
-      const socket = new WebSocket("ws://localhost:8000");
-      socket.onmessage = function (event) {
-        if (event.data === "refresh") {
-          location.reload();
-        }
-      };
+      let cursorType = "Cuboid";
+
+      function getCursorType() {
+        return cursorType;
+      }
+
+      setTimeout(() => {
+        cursorType = "Sphere";
+      }, 2000);
+      // This function is called by the Bevy
     </script>
     <script type="module">
       import init from "./bevy-wasm.js";

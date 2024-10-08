@@ -8,8 +8,6 @@ pub fn mouse_input_system(
     mut materials: ResMut<Assets<StandardMaterial>>,
     mouse_button_input: Res<ButtonInput<MouseButton>>
 ) {
-    //confdition to check if the left mouse button is pressed on a mesh
-
     // if mouse_button_input.just_pressed(MouseButton::Left) {
     //     //change the mesh material color on mouse click with mesh in place
     //     let params = MeshParameters {
@@ -24,4 +22,6 @@ pub fn mouse_input_system(
     //     scene::props::spwan_prop(&mut commands, &mut meshes, &mut materials, params);
 
     // }
+    //check if mouse is pressed on regeion of mesh
+
 }

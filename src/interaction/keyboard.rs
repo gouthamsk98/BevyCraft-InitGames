@@ -8,10 +8,10 @@ pub fn keyboard_input_system(
 ) {
     if keyboard_input.just_pressed(KeyCode::Space) {
         println!("Space key pressed");
-        scene::camera::change_camera_2d(&mut commands, &camera);
+        todo!();
     }
     if keyboard_input.just_pressed(KeyCode::Digit1) {
         println!("C key pressed");
-        scene::camera::change_camera_3d(&mut commands, &camera);
+        todo!()
     }
 }
