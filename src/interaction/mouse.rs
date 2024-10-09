@@ -20,8 +20,6 @@ pub fn mouse_input_system(
     //         position: Vec3::new(0.0, 0.5, 0.0),
     //     };
     //     scene::props::spwan_prop(&mut commands, &mut meshes, &mut materials, params);
-
     // }
     //check if mouse is pressed on regeion of mesh
-
 }

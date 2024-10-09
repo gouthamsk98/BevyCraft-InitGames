@@ -1,6 +1,6 @@
-use bevy::prelude::*;
+use bevy::{ input::touch::{ TouchInput, TouchPhase }, prelude::* };
 use std::f32::consts::PI;
-use crate::models::CursorType;
+use crate::{ scene, models::{ CursorType, MeshType, MeshPrams, MeshParameters } };
 use wasm_bindgen::prelude::*;
 
 #[cfg(target_arch = "wasm32")]
@@ -11,7 +11,17 @@ extern "C" {
 
 #[cfg(not(target_arch = "wasm32"))]
 pub fn get_cursor_type() -> String {
-    "Sphere".to_string()
+    "Cuboid".to_string()
+}
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen]
+extern "C" {
+    pub fn get_mesh_type() -> String;
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+pub fn get_mesh_type() -> String {
+    "Cube".to_string()
 }
 
 #[derive(Component)]
@@ -42,24 +52,26 @@ pub fn add_frid(mut gizmos: Gizmos) {
     );
 }
 
-pub fn draw_cursor(
+pub fn handle_element_interaction(
     camera_query: Query<(&Camera, &GlobalTransform)>,
     ground_query: Query<&GlobalTransform, With<Ground>>,
     windows: Query<&Window>,
-    gizmos: Gizmos
+    gizmos: Gizmos,
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+    mouse_button_input: Res<ButtonInput<MouseButton>>,
+    touch_input: Res<Touches>
 ) {
     let (camera, camera_transform) = camera_query.single();
     let ground = ground_query.single();
-
     let Some(cursor_position) = windows.single().cursor_position() else {
         return;
     };
-
     // Calculate a ray pointing from the camera into the world based on the cursor's position.
     let Some(ray) = camera.viewport_to_world(camera_transform, cursor_position) else {
         return;
     };
-
     // Calculate if and where the ray is hitting the ground plane.
     let Some(distance) = ray.intersect_plane(
         ground.translation(),
@@ -67,10 +79,42 @@ pub fn draw_cursor(
     ) else {
         return;
     };
-    let point = ray.get_point(distance);
+
+    // Handle touch input
+    info!("Entered touch Input");
+    for finger in touch_input.iter() {
+        if touch_input.just_pressed(finger.id()) {
+            //get ray cash point for touch input
+            let Some(ray) = camera.viewport_to_world(camera_transform, finger.position()) else {
+                return;
+            };
+            //Get mesh type from the web
+            // let mesh_type_str = get_mesh_type();
+            // let mesh_type: MeshType = mesh_type_str.into();
+            scene::props::spwan_prop(&mut commands, &mut meshes, &mut materials, MeshParameters {
+                dimensions: MeshType::Cube { width: 1.0, height: 1.0, depth: 1.0 },
+                color: Color::srgb(0.8, 0.7, 0.6),
+                position: ray.get_point(distance),
+            });
+        }
+    }
+    //handle mouse input
     let cursor_type_str = get_cursor_type();
-    let cursor_type: CursorType = cursor_type_str.into();
-    render_cursor(cursor_type, 1.0, gizmos, point, ground);
+    if !cursor_type_str.is_empty() && cursor_type_str != "Default" {
+        let cursor_type: CursorType = cursor_type_str.into();
+        let point = ray.get_point(distance);
+        render_cursor(cursor_type, 1.0, gizmos, point, ground);
+        if mouse_button_input.just_pressed(MouseButton::Left) {
+            //Get mesh type from the web
+            let mesh_type_str = get_mesh_type();
+            let mesh_type: MeshType = mesh_type_str.into();
+            scene::props::spwan_prop(&mut commands, &mut meshes, &mut materials, MeshParameters {
+                dimensions: mesh_type,
+                color: Color::srgb(0.8, 0.7, 0.6),
+                position: point,
+            });
+        }
+    }
 }
 fn render_cursor(
     cursor_type: CursorType,
@@ -81,6 +125,7 @@ fn render_cursor(
 ) {
     // create gizmos to render the cursor wrt mesh type
     match cursor_type {
+        CursorType::Default => {}
         CursorType::Sphere => {
             gizmos.sphere(point + ground.up() * 0.01, Quat::IDENTITY, size / 2.0, Color::WHITE);
         }

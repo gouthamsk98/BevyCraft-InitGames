@@ -6,8 +6,11 @@ fn main() {
     App::new()
         .add_plugins((DefaultPlugins, interaction::camera_controller::CameraControllerPlugin))
         .add_systems(Startup, setup)
-        .add_systems(Update, (scene::plane::add_frid, scene::plane::draw_cursor))
-
+        .add_systems(Update, (scene::plane::add_frid, scene::plane::handle_element_interaction))
+        .add_systems(Update, (
+            interaction::mouse::mouse_input_system,
+            interaction::keyboard::keyboard_input_system,
+        ))
         .run();
 }
 

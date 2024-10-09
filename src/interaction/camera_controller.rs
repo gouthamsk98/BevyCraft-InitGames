@@ -9,6 +9,7 @@ use bevy::window::CursorGrabMode;
 use std::{ f32::consts::*, fmt };
 use crate::models::CameraController;
 use crate::scene;
+
 pub struct CameraControllerPlugin;
 
 impl Plugin for CameraControllerPlugin {

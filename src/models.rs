@@ -1,5 +1,13 @@
 use bevy::prelude::*;
+use serde::Serialize;
 
+//
+#[derive(Serialize)]
+pub struct MeshPrams {
+    pub mesh_type: String,
+    pub color: Color,
+    pub position: Vec3,
+}
 pub enum MeshType {
     Cube {
         width: f32,
@@ -22,6 +30,43 @@ pub enum MeshType {
         height: f32,
     },
 }
+impl From<String> for MeshType {
+    fn from(s: String) -> Self {
+        match s.as_str() {
+            "Cube" =>
+                MeshType::Cube {
+                    width: 1.0,
+                    height: 1.0,
+                    depth: 1.0,
+                },
+            "Sphere" =>
+                MeshType::Sphere {
+                    radius: 0.5,
+                },
+            "Cylinder" =>
+                MeshType::Cylinder {
+                    radius: 0.5,
+                    height: 1.0,
+                },
+            "Capsule3D" =>
+                MeshType::Capsule3D {
+                    radius: 0.5,
+                    height: 1.0,
+                },
+            "Plane3D" =>
+                MeshType::Plane3D {
+                    width: 1.0,
+                    height: 1.0,
+                },
+            _ =>
+                MeshType::Cube {
+                    width: 1.0,
+                    height: 1.0,
+                    depth: 1.0,
+                },
+        }
+    }
+}
 pub struct MeshParameters {
     // pub mesh_type: MeshType,
     pub dimensions: MeshType,
@@ -29,6 +74,7 @@ pub struct MeshParameters {
     pub position: Vec3,
 }
 pub enum CursorType {
+    Default,
     Sphere,
     Cuboid,
     Circle,
@@ -39,6 +85,7 @@ pub enum CursorType {
 impl From<String> for CursorType {
     fn from(s: String) -> Self {
         match s.as_str() {
+            "Default" => CursorType::Default,
             "Sphere" => CursorType::Sphere,
             "Cuboid" => CursorType::Cuboid,
             "Circle" => CursorType::Circle,
@@ -95,6 +142,24 @@ impl Default for CameraController {
             pitch: 0.0,
             yaw: 0.0,
             velocity: Vec3::ZERO,
+        }
+    }
+}
+pub enum ToolType {
+    Select,
+    Move,
+    Rotate,
+    Scale,
+    None,
+}
+impl From<String> for ToolType {
+    fn from(s: String) -> Self {
+        match s.as_str() {
+            "Select" => ToolType::Select,
+            "Move" => ToolType::Move,
+            "Rotate" => ToolType::Rotate,
+            "Scale" => ToolType::Scale,
+            _ => ToolType::None,
         }
     }
 }
