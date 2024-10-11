@@ -1,6 +1,7 @@
 // mouse.rs
 use bevy::prelude::*;
-use crate::{ scene, models::{ MeshParameters, MeshType } };
+use crate::{ models::{ MeshParameters, MeshType, ToolType }, scene };
+use crate::web::get_tool_type;
 
 pub fn mouse_input_system(
     mut commands: Commands,
@@ -8,18 +9,15 @@ pub fn mouse_input_system(
     mut materials: ResMut<Assets<StandardMaterial>>,
     mouse_button_input: Res<ButtonInput<MouseButton>>
 ) {
-    // if mouse_button_input.just_pressed(MouseButton::Left) {
-    //     //change the mesh material color on mouse click with mesh in place
-    //     let params = MeshParameters {
-    //         dimensions: MeshType::Cube {
-    //             width: 1.0,
-    //             height: 1.0,
-    //             depth: 1.0,
-    //         },
-    //         color: Color::srgb(0.8, 0.7, 0.6),
-    //         position: Vec3::new(0.0, 0.5, 0.0),
-    //     };
-    //     scene::props::spwan_prop(&mut commands, &mut meshes, &mut materials, params);
-    // }
-    //check if mouse is pressed on regeion of mesh
+    let tool_type = get_tool_type().into();
+    if mouse_button_input.just_pressed(MouseButton::Left) {
+        match tool_type {
+            ToolType::Default => {}
+            ToolType::None => {}
+            ToolType::Select => {}
+            ToolType::Move => {}
+            ToolType::Rotate => {}
+            ToolType::Scale => {}
+        }
+    }
 }

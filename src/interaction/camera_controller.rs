@@ -7,8 +7,8 @@ use bevy::input::mouse::{ MouseMotion, MouseScrollUnit, MouseWheel };
 use bevy::{ prelude::*, render::camera::{ ScalingMode } };
 use bevy::window::CursorGrabMode;
 use std::{ f32::consts::*, fmt };
-use crate::models::CameraController;
-use crate::scene;
+use crate::models::{ CameraController, ToolType };
+use crate::web::get_tool_type;
 
 pub struct CameraControllerPlugin;
 
@@ -35,6 +35,10 @@ fn run_camera_controller(
     mut mouse_cursor_grab: Local<bool>,
     mut query: Query<(&mut Transform, &mut CameraController, &mut Projection), With<Camera>>
 ) {
+    let tool_type: ToolType = get_tool_type().into();
+    if tool_type != ToolType::Default {
+        return;
+    }
     let dt = time.delta_seconds();
 
     if let Ok((mut transform, mut controller, mut projection)) = query.get_single_mut() {
@@ -147,6 +151,7 @@ fn run_camera_controller(
             mouse_events.clear();
         }
 
+        //check if tool_type is None
         if mouse_delta != Vec2::ZERO {
             // Apply look update
             controller.pitch = (

@@ -1,6 +1,9 @@
-use bevy::prelude::*;
-use crate::models::{ MeshType, MeshParameters };
+use bevy::{ prelude::*, utils::info };
+use bevy_mod_picking::prelude::*;
+use crate::models::{ MeshType, MeshParameters, MeshId };
+
 pub fn spwan_prop(
+    point: Vec3,
     commands: &mut Commands,
     meshes: &mut ResMut<Assets<Mesh>>,
     materials: &mut ResMut<Assets<StandardMaterial>>,
@@ -14,10 +17,24 @@ pub fn spwan_prop(
         MeshType::Plane3D { width, height } =>
             meshes.add(Plane3d::default().mesh().size(width, height)),
     };
-    commands.spawn(PbrBundle {
-        mesh: mesh,
-        material: materials.add(params.color),
-        transform: Transform::from_translation(params.position),
-        ..default()
-    });
+    commands
+        .spawn((
+            PbrBundle {
+                mesh: mesh,
+                material: materials.add(params.color),
+                transform: Transform::from_translation(params.position),
+                ..default()
+            },
+            PickableBundle::default(),
+            On::<Pointer<DragStart>>::target_insert(Pickable::IGNORE), // Disable picking
+            On::<Pointer<DragEnd>>::target_insert(Pickable::default()), // Re-enable picking
+            On::<Pointer<Drag>>::target_component_mut::<Transform>(move |drag, transform| {
+                todo!()
+            }),
+            On::<Pointer<Click>>::run(on_mesh_click),
+        ))
+        .insert(MeshId(1));
+}
+fn on_mesh_click(_click: &Pointer<Click>, _mesh_id: &MeshId) {
+    info!("Mesh clicked!");
 }

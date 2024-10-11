@@ -1,29 +1,7 @@
-use bevy::{ input::touch::{ TouchInput, TouchPhase }, prelude::* };
+use bevy::prelude::*;
 use std::f32::consts::PI;
-use crate::{ scene, models::{ CursorType, MeshType, MeshPrams, MeshParameters } };
-use wasm_bindgen::prelude::*;
-
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen]
-extern "C" {
-    pub fn get_cursor_type() -> String;
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-pub fn get_cursor_type() -> String {
-    "Cuboid".to_string()
-}
-#[cfg(target_arch = "wasm32")]
-#[wasm_bindgen]
-extern "C" {
-    pub fn get_mesh_type() -> String;
-}
-
-#[cfg(not(target_arch = "wasm32"))]
-pub fn get_mesh_type() -> String {
-    "Cube".to_string()
-}
-
+use crate::{ scene, models::{ CursorType, MeshType, MeshParameters, MeshId } };
+use crate::web::{ get_cursor_type, get_mesh_type };
 #[derive(Component)]
 pub struct Ground;
 
@@ -61,8 +39,11 @@ pub fn handle_element_interaction(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    touch_input: Res<Touches>
+    mesh_id_query: Query<&mut MeshId>
 ) {
+    if let Ok(mesh_id) = mesh_id_query.get_single_mut() {
+    }
+
     let (camera, camera_transform) = camera_query.single();
     let ground = ground_query.single();
     let Some(cursor_position) = windows.single().cursor_position() else {
@@ -80,39 +61,27 @@ pub fn handle_element_interaction(
         return;
     };
 
-    // Handle touch input
-    info!("Entered touch Input");
-    for finger in touch_input.iter() {
-        if touch_input.just_pressed(finger.id()) {
-            //get ray cash point for touch input
-            let Some(ray) = camera.viewport_to_world(camera_transform, finger.position()) else {
-                return;
-            };
-            //Get mesh type from the web
-            // let mesh_type_str = get_mesh_type();
-            // let mesh_type: MeshType = mesh_type_str.into();
-            scene::props::spwan_prop(&mut commands, &mut meshes, &mut materials, MeshParameters {
-                dimensions: MeshType::Cube { width: 1.0, height: 1.0, depth: 1.0 },
-                color: Color::srgb(0.8, 0.7, 0.6),
-                position: ray.get_point(distance),
-            });
-        }
-    }
+    let point = ray.get_point(distance);
     //handle mouse input
     let cursor_type_str = get_cursor_type();
     if !cursor_type_str.is_empty() && cursor_type_str != "Default" {
         let cursor_type: CursorType = cursor_type_str.into();
-        let point = ray.get_point(distance);
         render_cursor(cursor_type, 1.0, gizmos, point, ground);
         if mouse_button_input.just_pressed(MouseButton::Left) {
             //Get mesh type from the web
             let mesh_type_str = get_mesh_type();
             let mesh_type: MeshType = mesh_type_str.into();
-            scene::props::spwan_prop(&mut commands, &mut meshes, &mut materials, MeshParameters {
-                dimensions: mesh_type,
-                color: Color::srgb(0.8, 0.7, 0.6),
-                position: point,
-            });
+            scene::props::spwan_prop(
+                point,
+                &mut commands,
+                &mut meshes,
+                &mut materials,
+                MeshParameters {
+                    dimensions: mesh_type,
+                    color: Color::srgb(0.8, 0.7, 0.6),
+                    position: point,
+                }
+            );
         }
     }
 }

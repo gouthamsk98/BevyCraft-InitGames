@@ -97,6 +97,23 @@ impl From<String> for CursorType {
     }
 }
 #[derive(Component)]
+pub struct TouchCursor {
+    pub cursor_type: CursorType,
+    pub color: Color,
+    pub position: Vec3,
+    pub scale: Vec3,
+}
+impl Default for TouchCursor {
+    fn default() -> Self {
+        Self {
+            cursor_type: CursorType::Default,
+            color: Color::WHITE,
+            position: Vec3::ZERO,
+            scale: Vec3::ONE,
+        }
+    }
+}
+#[derive(Component)]
 pub struct CameraController {
     pub enabled: bool,
     pub initialized: bool,
@@ -145,12 +162,19 @@ impl Default for CameraController {
         }
     }
 }
+#[derive(PartialEq)]
 pub enum ToolType {
     Select,
     Move,
     Rotate,
     Scale,
+    Default,
     None,
+}
+impl Default for ToolType {
+    fn default() -> Self {
+        ToolType::Default
+    }
 }
 impl From<String> for ToolType {
     fn from(s: String) -> Self {
@@ -159,7 +183,17 @@ impl From<String> for ToolType {
             "Move" => ToolType::Move,
             "Rotate" => ToolType::Rotate,
             "Scale" => ToolType::Scale,
+            "Default" => ToolType::Default,
             _ => ToolType::None,
         }
+    }
+}
+
+#[derive(Component)]
+pub struct MeshId(pub u32);
+
+impl Default for MeshId {
+    fn default() -> Self {
+        Self(0)
     }
 }

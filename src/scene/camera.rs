@@ -1,7 +1,7 @@
 // camera.rs
 
 use bevy::{ prelude::*, render::camera::ScalingMode };
-use crate::models::CameraController;
+use crate::models::{ CameraController, ToolType };
 pub fn spawn_camera(commands: &mut Commands) {
     commands.spawn((
         Camera3dBundle {
