@@ -73,6 +73,7 @@ pub struct MeshParameters {
     pub color: Color,
     pub position: Vec3,
 }
+#[derive(PartialEq)]
 pub enum CursorType {
     Default,
     Sphere,
@@ -195,5 +196,12 @@ pub struct MeshId(pub u32);
 impl Default for MeshId {
     fn default() -> Self {
         Self(0)
+    }
+}
+#[derive(Resource)]
+pub struct CurrentMeshEntity(pub Option<Entity>);
+impl Default for CurrentMeshEntity {
+    fn default() -> Self {
+        Self(None)
     }
 }

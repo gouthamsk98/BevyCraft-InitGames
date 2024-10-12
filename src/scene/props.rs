@@ -1,9 +1,9 @@
-use bevy::{ prelude::*, utils::info };
+use bevy::{ ecs::entity, prelude::*, utils::info };
 use bevy_mod_picking::prelude::*;
-use crate::models::{ MeshType, MeshParameters, MeshId };
+use crate::models::{ MeshType, MeshParameters, MeshId, CurrentMeshEntity };
 
 pub fn spwan_prop(
-    point: Vec3,
+    mut current_entity: ResMut<CurrentMeshEntity>,
     commands: &mut Commands,
     meshes: &mut ResMut<Assets<Mesh>>,
     materials: &mut ResMut<Assets<StandardMaterial>>,
@@ -17,24 +17,38 @@ pub fn spwan_prop(
         MeshType::Plane3D { width, height } =>
             meshes.add(Plane3d::default().mesh().size(width, height)),
     };
-    commands
-        .spawn((
-            PbrBundle {
-                mesh: mesh,
-                material: materials.add(params.color),
-                transform: Transform::from_translation(params.position),
-                ..default()
-            },
-            PickableBundle::default(),
-            On::<Pointer<DragStart>>::target_insert(Pickable::IGNORE), // Disable picking
-            On::<Pointer<DragEnd>>::target_insert(Pickable::default()), // Re-enable picking
-            On::<Pointer<Drag>>::target_component_mut::<Transform>(move |drag, transform| {
-                todo!()
-            }),
-            On::<Pointer<Click>>::run(on_mesh_click),
-        ))
-        .insert(MeshId(1));
+    commands.spawn((
+        PbrBundle {
+            mesh: mesh,
+            material: materials.add(params.color),
+            transform: Transform::from_translation(params.position),
+            ..default()
+        },
+        PickableBundle::default(),
+        // On::<Pointer<DragStart>>::target_insert(Pickable::IGNORE), // Disable picking
+        On::<Pointer<DragStart>>::run(set_current_entity),
+        On::<Pointer<DragEnd>>::run(set_current_entity_to_none), // Re-enable picking
+    ));
 }
-fn on_mesh_click(_click: &Pointer<Click>, _mesh_id: &MeshId) {
-    info!("Mesh clicked!");
+fn set_current_entity(
+    event: Listener<Pointer<DragStart>>,
+    mut current_entity: ResMut<CurrentMeshEntity>
+) {
+    let entity = event.target();
+    current_entity.0 = Some(entity);
+}
+fn set_current_entity_to_none(mut current_entity: ResMut<CurrentMeshEntity>) {
+    current_entity.0 = None;
+}
+pub fn spwan_gltf(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+    asset_server: Res<AssetServer>
+) {
+    commands.spawn(SceneBundle {
+        scene: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/Fox/Fox.glb")),
+        transform: Transform::from_translation(Vec3::ZERO),
+        ..default()
+    });
 }

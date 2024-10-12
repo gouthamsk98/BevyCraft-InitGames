@@ -1,7 +1,7 @@
 //! A simple 3D scene with light shining over a cube sitting on a plane.
 use wasm_bindgen::prelude::*;
 use bevy::prelude::*;
-use bevycraft::{ scene, models::{ MeshType, MeshParameters }, interaction };
+use bevycraft::{ scene, models::{ MeshType, MeshParameters, CurrentMeshEntity }, interaction };
 use bevy_mod_picking::DefaultPickingPlugins;
 fn main() {
     App::new()
@@ -15,8 +15,9 @@ fn main() {
             }),
             interaction::camera_controller::CameraControllerPlugin,
         ))
+        .insert_resource(CurrentMeshEntity::default())
         .add_plugins(DefaultPickingPlugins)
-        .add_systems(Startup, setup)
+        .add_systems(Startup, (setup, scene::props::spwan_gltf))
         .add_systems(Update, (scene::plane::add_frid, scene::plane::handle_element_interaction))
         .add_systems(Update, (
             interaction::mouse::mouse_input_system,

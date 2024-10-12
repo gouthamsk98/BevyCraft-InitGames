@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 use std::f32::consts::PI;
-use crate::{ scene, models::{ CursorType, MeshType, MeshParameters, MeshId } };
-use crate::web::{ get_cursor_type, get_mesh_type };
+use crate::{ models::{ CurrentMeshEntity, CursorType, MeshParameters, MeshType, ToolType }, scene };
+use crate::web::{ get_cursor_type, get_mesh_type, get_tool_type };
 #[derive(Component)]
 pub struct Ground;
 
@@ -39,11 +39,9 @@ pub fn handle_element_interaction(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     mouse_button_input: Res<ButtonInput<MouseButton>>,
-    mesh_id_query: Query<&mut MeshId>
+    current_entity: ResMut<CurrentMeshEntity>,
+    mut query: Query<&mut Transform>
 ) {
-    if let Ok(mesh_id) = mesh_id_query.get_single_mut() {
-    }
-
     let (camera, camera_transform) = camera_query.single();
     let ground = ground_query.single();
     let Some(cursor_position) = windows.single().cursor_position() else {
@@ -60,29 +58,45 @@ pub fn handle_element_interaction(
     ) else {
         return;
     };
-
+    info!("cuurent entity: {:?}", current_entity.0);
     let point = ray.get_point(distance);
-    //handle mouse input
-    let cursor_type_str = get_cursor_type();
-    if !cursor_type_str.is_empty() && cursor_type_str != "Default" {
-        let cursor_type: CursorType = cursor_type_str.into();
-        render_cursor(cursor_type, 1.0, gizmos, point, ground);
-        if mouse_button_input.just_pressed(MouseButton::Left) {
-            //Get mesh type from the web
-            let mesh_type_str = get_mesh_type();
-            let mesh_type: MeshType = mesh_type_str.into();
-            scene::props::spwan_prop(
-                point,
-                &mut commands,
-                &mut meshes,
-                &mut materials,
-                MeshParameters {
-                    dimensions: mesh_type,
-                    color: Color::srgb(0.8, 0.7, 0.6),
-                    position: point,
+    let cursor_type: CursorType = get_cursor_type().into();
+    let tool_type: ToolType = get_tool_type().into();
+    match tool_type {
+        ToolType::Default => {}
+        ToolType::Select => {
+            //move enntity to point position
+            if let Some(entity) = current_entity.0 {
+                if let Ok(mut transform) = query.get_mut(entity) {
+                    transform.translation = point;
                 }
-            );
+            }
         }
+        ToolType::None => {
+            //handle mouse input
+            if cursor_type != CursorType::Default {
+                render_cursor(cursor_type, 1.0, gizmos, point, ground);
+                if mouse_button_input.just_pressed(MouseButton::Left) {
+                    //Get mesh type from the web
+                    let mesh_type_str = get_mesh_type();
+                    let mesh_type: MeshType = mesh_type_str.into();
+                    scene::props::spwan_prop(
+                        current_entity,
+                        &mut commands,
+                        &mut meshes,
+                        &mut materials,
+                        MeshParameters {
+                            dimensions: mesh_type,
+                            color: Color::srgb(0.8, 0.7, 0.6),
+                            position: point,
+                        }
+                    );
+                }
+            }
+        }
+        ToolType::Move => {}
+        ToolType::Rotate => {}
+        ToolType::Scale => {}
     }
 }
 fn render_cursor(
