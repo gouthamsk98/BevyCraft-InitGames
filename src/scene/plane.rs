@@ -58,7 +58,6 @@ pub fn handle_element_interaction(
     ) else {
         return;
     };
-    info!("cuurent entity: {:?}", current_entity.0);
     let point = ray.get_point(distance);
     let cursor_type: CursorType = get_cursor_type().into();
     let tool_type: ToolType = get_tool_type().into();

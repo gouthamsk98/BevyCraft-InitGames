@@ -1,5 +1,6 @@
 use bevy::{ ecs::entity, prelude::*, utils::info };
 use bevy_mod_picking::prelude::*;
+use bevy::scene::prelude::*;
 use crate::models::{ MeshType, MeshParameters, MeshId, CurrentMeshEntity };
 
 pub fn spwan_prop(
@@ -40,6 +41,9 @@ fn set_current_entity(
 fn set_current_entity_to_none(mut current_entity: ResMut<CurrentMeshEntity>) {
     current_entity.0 = None;
 }
+/// Helper resource for tracking our asset
+#[derive(Resource)]
+struct MyAssetPack(Handle<Gltf>);
 pub fn spwan_gltf(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -47,8 +51,14 @@ pub fn spwan_gltf(
     asset_server: Res<AssetServer>
 ) {
     commands.spawn(SceneBundle {
-        scene: asset_server.load(GltfAssetLabel::Scene(0).from_asset("models/Fox/Fox.glb")),
-        transform: Transform::from_translation(Vec3::ZERO),
-        ..default()
+        // This is equivalent to "models/FlightHelmet/FlightHelmet.gltf#Scene0"
+        // The `#Scene0` label here is very important because it tells bevy to load the first scene in the glTF file.
+        // If this isn't specified bevy doesn't know which part of the glTF file to load.
+        scene: asset_server.load(
+            GltfAssetLabel::Scene(0).from_asset("models/FlightHelmet/FlightHelmet.gltf")
+        ),
+        // You can use the transform to give it a position
+        transform: Transform::from_xyz(0.0, 0.0, 0.0).with_scale(Vec3::splat(1.0)),
+        ..Default::default()
     });
 }

@@ -3,6 +3,8 @@ use wasm_bindgen::prelude::*;
 use bevy::prelude::*;
 use bevycraft::{ scene, models::{ MeshType, MeshParameters, CurrentMeshEntity }, interaction };
 use bevy_mod_picking::DefaultPickingPlugins;
+const FOX_PATH: &str = "models/animated/Fox.glb";
+
 fn main() {
     App::new()
         .add_plugins((
@@ -15,9 +17,10 @@ fn main() {
             }),
             interaction::camera_controller::CameraControllerPlugin,
         ))
+
         .insert_resource(CurrentMeshEntity::default())
         .add_plugins(DefaultPickingPlugins)
-        .add_systems(Startup, (setup, scene::props::spwan_gltf))
+        .add_systems(Startup, setup)
         .add_systems(Update, (scene::plane::add_frid, scene::plane::handle_element_interaction))
         .add_systems(Update, (
             interaction::mouse::mouse_input_system,
@@ -31,9 +34,16 @@ use bevy::{ prelude::*, render::camera::ScalingMode };
 fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>
+    mut materials: ResMut<Assets<StandardMaterial>>,
+    asset_server: Res<AssetServer>
 ) {
     scene::camera::spawn_camera(&mut commands);
     scene::plane::spwan_plane(&mut commands, &mut meshes, &mut materials);
     scene::light::spwan_light(&mut commands);
+    commands.spawn(SceneBundle {
+        scene: asset_server.load(
+            GltfAssetLabel::Scene(0).from_asset("models/FlightHelmet/FlightHelmet.gltf")
+        ),
+        ..default()
+    });
 }
