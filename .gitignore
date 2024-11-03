@@ -1,3 +1,6 @@
 /target
 cargo.lock
 frontend_react/node_modules
+node_modules
+package-lock.json
+out/dist
