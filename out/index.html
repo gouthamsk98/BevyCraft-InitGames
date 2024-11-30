@@ -1,23 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <title>Bevy Wasm Example</title>
-    <style>
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        overflow: hidden; /* Prevents scrolling */
-        width: 100%;
-        height: 100%;
-      }
-      canvas {
-        display: block;
-        width: 100vw !important; /* Full viewport width */
-        height: 100vh !important; /* Full viewport height */
-      }
-    </style>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + TS</title>
   </head>
   <body>
     <script>
@@ -44,7 +31,7 @@
       import init from "./bevycraft.js";
       init();
     </script>
-        <script type="module" src="./dist/main.js"></script>
+    <script type="module" src="./dist/main.js"></script>
     <canvas id="main-canvas"></canvas>
   </body>
 </html>

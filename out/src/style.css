@@ -1,0 +1,129 @@
+@import url("https://fonts.googleapis.com/css2?family=Salsa&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed&family=Roboto:wght@100;700&display=swap");
+
+body {
+  margin: 0;
+  box-sizing: border-box;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+  background-color: black;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+p {
+  margin: 0;
+  padding: 0;
+}
+
+.blocklyFlyout {
+  /* transform: translate(40px, 95px) !important; */
+  min-width: 390px !important;
+  height: 70vh !important;
+  overflow: auto;
+}
+
+.blocklyScrollbarVertical,
+.blocklyScrollbarHorizontal {
+  display: none;
+}
+
+.blocklyFlyout:hover {
+  max-width: 750px;
+}
+:root {
+  --primary-color: #29abe2;
+  --secondary-color: #2f3459;
+  --main-font-family: "Noto Sans JP", sans-serif;
+  --secondary-font-family: "Salsa", cursive;
+}
+.blocklyToolboxDiv {
+  height: fit-content !important;
+  background-color: transparent;
+}
+.blocklyToolboxContents {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  margin-left: 2rem;
+  margin-top: 0.75rem;
+}
+.blocklyToolboxCategory {
+  padding: 0.1rem 0;
+}
+.blocklyTreeRow {
+  height: 60px;
+  width: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none !important;
+  position: relative;
+  border-radius: 0;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+.blocklyTreeRow[id="events"] {
+  background-color: #5c81a6;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.blocklyTreeRow[id="mesh"] {
+  background-color: #ea360f;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.blocklyTreeRow[id="players"] {
+  background-color: #1fea0f;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.blocklyTreeRow[id="environment"] {
+  background-color: #eacc0f;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.blocklyTreeRow[id="music"] {
+  background-color: #0f58ea;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.blocklyTreeRow[id="physics"] {
+  background-color: #ea0fc2;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+.blocklyTreeLabel {
+  display: none;
+}
+.blocklyTreeSelected .blocklyTreeLabel {
+  color: white;
+  display: block;
+  position: relative;
+  top: -9px;
+  font-weight: 700;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+}
+.blocklyTreeRow:hover {
+  transition: all 0.2s ease-in-out;
+  background-color: rgb(91, 92, 93) !important;
+}
+
+.blocklyTreeSelected {
+  width: 120px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+}
+
+main {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}

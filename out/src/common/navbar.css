@@ -1,0 +1,54 @@
+.navHeader {
+  position: fixed;
+  left: 50%;
+  top: 0%;
+  transform: translate(-50%, 0%);
+  font-size: 0.9rem;
+  background-color: #fcfcff;
+  z-index: 10000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.navElement {
+  padding: 0.7rem;
+  font-size: 0.8rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+}
+
+.selected {
+  background-color: #5630c2;
+  color: white;
+}
+
+.unselected {
+  background-color: #fcfcff;
+  color: black;
+}
+
+@media screen and (min-width: 1024px) {
+  .navHeader {
+    width: 30%;
+  }
+  .navElement {
+    font-size: 0.8rem;
+    padding: 0.8rem;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  .navHeader {
+    width: 27%;
+    padding: 0.7rem 1rem;
+  }
+  .navElement {
+    font-size: 1rem;
+    padding: 0.9rem 1.2rem;
+  }
+}

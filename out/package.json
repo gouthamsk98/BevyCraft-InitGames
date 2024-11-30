@@ -1,20 +1,19 @@
 {
-  "name": "bevycraft",
+  "name": "out",
+  "private": true,
+  "version": "0.0.0",
   "type": "module",
-  "collaborators": [
-    "goutham <goutham@yudurobotics.com>"
-  ],
-  "version": "0.1.0",
-  "files": [
-    "bevycraft_bg.wasm",
-    "bevycraft_bg.wasm.d",
-    "bevycraft.d.ts",
-    "bevycraft.js"
-  ],
-  "main": "bevycraft.js",
-  "types": "bevycraft.d.ts",
-  "sideEffects": [
-    "./bevycraft.js",
-    "./snippets/*"
-  ]
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "~5.6.2",
+    "vite": "^6.0.1"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.7.1",
+    "@fortawesome/free-solid-svg-icons": "^6.7.1"
+  }
 }
