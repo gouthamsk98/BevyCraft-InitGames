@@ -7,7 +7,7 @@ cargo build --target wasm32-unknown-unknown --release
 wasm-bindgen --out-dir ./frontend/engine --target web ./target/wasm32-unknown-unknown/release/bevycraft.wasm
 
 # Run the server
-# cargo server --path ./build &
+cd frontend && npm run build 
 
 # Wait a moment to ensure the server is running
 # sleep 5

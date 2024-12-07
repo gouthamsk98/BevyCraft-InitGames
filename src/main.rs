@@ -1,8 +1,9 @@
 //! A simple 3D scene with light shining over a cube sitting on a plane.
 use wasm_bindgen::prelude::*;
 use bevy::prelude::*;
-use bevycraft::{ scene, models::{ MeshType, MeshParameters, CurrentMeshEntity } };
+use bevycraft::{ interaction, models::{ CurrentMeshEntity, MeshParameters, MeshType }, scene };
 use bevy_mod_picking::DefaultPickingPlugins;
+use avian3d::prelude::*;
 const FOX_PATH: &str = "models/animated/Fox.glb";
 
 fn main() {
@@ -17,11 +18,14 @@ fn main() {
             }),
             // interaction::camera_controller::CameraControllerPlugin,
         ))
-
+        // .add_plugins(PhysicsPlugins::default())
         .insert_resource(CurrentMeshEntity::default())
         // .add_plugins(DefaultPickingPlugins)
         .add_systems(Startup, setup)
-        .add_systems(Update, (scene::plane::add_grid, scene::plane::handle_element_interaction))
+        .add_systems(Update, (
+            scene::plane::add_grid,
+            interaction::mouse::handle_element_interaction,
+        ))
         // .add_systems(Update, (
         //     interaction::mouse::mouse_input_system,
         //     interaction::keyboard::keyboard_input_system,

@@ -5,3 +5,5 @@ out/node_modules
 out/package-lock.json
 out/dist
 frontend/engine
+frontend/public
+frontend/dist
