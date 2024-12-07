@@ -1,7 +1,7 @@
 //! A simple 3D scene with light shining over a cube sitting on a plane.
 use wasm_bindgen::prelude::*;
 use bevy::prelude::*;
-use bevycraft::{ scene, models::{ MeshType, MeshParameters, CurrentMeshEntity }, interaction };
+use bevycraft::{ scene, models::{ MeshType, MeshParameters, CurrentMeshEntity } };
 use bevy_mod_picking::DefaultPickingPlugins;
 const FOX_PATH: &str = "models/animated/Fox.glb";
 
@@ -15,17 +15,17 @@ fn main() {
                 }),
                 ..default()
             }),
-            interaction::camera_controller::CameraControllerPlugin,
+            // interaction::camera_controller::CameraControllerPlugin,
         ))
 
         .insert_resource(CurrentMeshEntity::default())
-        .add_plugins(DefaultPickingPlugins)
+        // .add_plugins(DefaultPickingPlugins)
         .add_systems(Startup, setup)
-        .add_systems(Update, (scene::plane::add_frid, scene::plane::handle_element_interaction))
-        .add_systems(Update, (
-            interaction::mouse::mouse_input_system,
-            interaction::keyboard::keyboard_input_system,
-        ))
+        .add_systems(Update, (scene::plane::add_grid, scene::plane::handle_element_interaction))
+        // .add_systems(Update, (
+        //     interaction::mouse::mouse_input_system,
+        //     interaction::keyboard::keyboard_input_system,
+        // ))
         .run();
 }
 
@@ -40,10 +40,12 @@ fn setup(
     scene::camera::spawn_camera(&mut commands);
     scene::plane::spwan_plane(&mut commands, &mut meshes, &mut materials);
     scene::light::spwan_light(&mut commands);
-    commands.spawn(SceneBundle {
-        scene: asset_server.load(
-            GltfAssetLabel::Scene(0).from_asset("models/FlightHelmet/FlightHelmet.gltf")
-        ),
-        ..default()
-    });
+    scene::props::spwan_gltf(commands, meshes, materials, asset_server);
+    // commands.spawn(
+    //     SceneRoot(
+    //         asset_server.load(
+    //             GltfAssetLabel::Scene(0).from_asset("models/FlightHelmet/FlightHelmet.gltf")
+    //         )
+    //     )
+    // );
 }
