@@ -1,9 +1,8 @@
 //! A simple 3D scene with light shining over a cube sitting on a plane.
-use wasm_bindgen::prelude::*;
 use bevy::prelude::*;
-use bevycraft::{ scene, models::{ MeshType, MeshParameters, CurrentMeshEntity }, interaction };
+use bevy_rapier3d::prelude::*;
+use bevycraft::{ scene, models::CurrentMeshEntity, interaction };
 use bevy_mod_picking::DefaultPickingPlugins;
-const FOX_PATH: &str = "models/animated/Fox.glb";
 
 fn main() {
     App::new()
@@ -17,11 +16,15 @@ fn main() {
             }),
             interaction::camera_controller::CameraControllerPlugin,
         ))
-
+        .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
+        .add_plugins(RapierDebugRenderPlugin::default())
         .insert_resource(CurrentMeshEntity::default())
         .add_plugins(DefaultPickingPlugins)
         .add_systems(Startup, setup)
-        .add_systems(Update, (scene::plane::add_frid, scene::plane::handle_element_interaction))
+        .add_systems(Update, (
+            scene::plane::add_grid,
+            interaction::mouse::handle_element_interaction,
+        ))
         .add_systems(Update, (
             interaction::mouse::mouse_input_system,
             interaction::keyboard::keyboard_input_system,
@@ -29,8 +32,6 @@ fn main() {
         .run();
 }
 
-/// set up a simple 3D scene
-use bevy::{ prelude::*, render::camera::ScalingMode };
 fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
@@ -40,10 +41,18 @@ fn setup(
     scene::camera::spawn_camera(&mut commands);
     scene::plane::spwan_plane(&mut commands, &mut meshes, &mut materials);
     scene::light::spwan_light(&mut commands);
-    commands.spawn(SceneBundle {
-        scene: asset_server.load(
-            GltfAssetLabel::Scene(0).from_asset("models/FlightHelmet/FlightHelmet.gltf")
-        ),
-        ..default()
-    });
+    commands
+        .spawn((
+            SceneBundle {
+                scene: asset_server.load(
+                    GltfAssetLabel::Scene(0).from_asset("models/FlightHelmet/FlightHelmet.gltf")
+                ),
+
+                ..default()
+            },
+            RigidBody::Dynamic,
+        ))
+        .insert(Collider::capsule(Vec3::new(1.0, 1.0, 1.0), Vec3::new(1.0, 1.0, 1.0), 1.0))
+        .insert(TransformBundle::from(Transform::from_xyz(0.0, 4.0, 0.0)))
+        .insert(Restitution::coefficient(0.7));
 }
