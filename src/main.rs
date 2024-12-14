@@ -10,6 +10,8 @@ fn main() {
             DefaultPlugins.set(WindowPlugin {
                 primary_window: Some(Window {
                     canvas: Some(String::from("#main-canvas")),
+                    fit_canvas_to_parent: true, // Ensures the canvas fits the parent container
+                    resizable: false,
                     ..default()
                 }),
                 ..default()
@@ -17,7 +19,7 @@ fn main() {
             interaction::camera_controller::CameraControllerPlugin,
         ))
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
-        .add_plugins(RapierDebugRenderPlugin::default())
+        // .add_plugins(RapierDebugRenderPlugin::default())
         .insert_resource(CurrentMeshEntity::default())
         .add_plugins(DefaultPickingPlugins)
         .add_systems(Startup, setup)
