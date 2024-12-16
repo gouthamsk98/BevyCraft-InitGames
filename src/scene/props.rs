@@ -1,6 +1,7 @@
 use bevy::{ ecs::entity, prelude::*, utils::info };
 use bevy_mod_picking::prelude::*;
 use bevy::scene::prelude::*;
+use bevy_mod_outline::*;
 use crate::models::{ MeshType, MeshParameters, MeshId, CurrentMeshEntity };
 
 pub fn spwan_prop(
@@ -18,18 +19,31 @@ pub fn spwan_prop(
         MeshType::Plane3D { width, height } =>
             meshes.add(Plane3d::default().mesh().size(width, height)),
     };
-    commands.spawn((
-        PbrBundle {
-            mesh: mesh,
-            material: materials.add(params.color),
-            transform: Transform::from_translation(params.position),
+    commands
+        .spawn((
+            PbrBundle {
+                mesh: mesh,
+                material: materials.add(params.color),
+                transform: Transform::from_translation(params.position),
+                ..default()
+            },
+            // PickableBundle::default(),
+            PickableBundle {
+                selection: PickSelection { is_selected: true },
+                ..default()
+            },
+            // On::<Pointer<DragStart>>::target_insert(Pickable::IGNORE), // Disable picking
+            On::<Pointer<DragStart>>::run(set_current_entity),
+            On::<Pointer<DragEnd>>::run(set_current_entity_to_none), // Re-enable picking
+        ))
+        .insert(OutlineBundle {
+            // outline: OutlineVolume {
+            //     visible: false,
+            //     colour: Color::WHITE,
+            //     width: 2.0,
+            // },
             ..default()
-        },
-        PickableBundle::default(),
-        // On::<Pointer<DragStart>>::target_insert(Pickable::IGNORE), // Disable picking
-        On::<Pointer<DragStart>>::run(set_current_entity),
-        On::<Pointer<DragEnd>>::run(set_current_entity_to_none), // Re-enable picking
-    ));
+        });
 }
 fn set_current_entity(
     event: Listener<Pointer<DragStart>>,

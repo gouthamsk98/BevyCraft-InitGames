@@ -12,4 +12,6 @@ wasm-bindgen = "0.2.99"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 bevy_mod_picking="0.20.0"
+transform-gizmo-bevy ="0.4.0"
 bevy_rapier3d="0.27.0"
+bevy_mod_outline = { git = "https://github.com/komadori/bevy_mod_outline.git", rev = "d24b2eaec26b02f91ef99ebf0d86b982ea05a0ed" }

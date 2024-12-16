@@ -114,6 +114,18 @@ impl Default for TouchCursor {
         }
     }
 }
+#[derive(Resource)]
+pub struct SelectedTool {
+    pub is_move_enabled: bool,
+}
+impl Default for SelectedTool {
+    fn default() -> Self {
+        Self {
+            is_move_enabled: false,
+        }
+    }
+}
+
 #[derive(Component)]
 pub struct CameraController {
     pub enabled: bool,

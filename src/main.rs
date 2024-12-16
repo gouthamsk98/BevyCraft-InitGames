@@ -2,8 +2,10 @@
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 use bevycraft::{ scene, models::CurrentMeshEntity, interaction };
-use bevy_mod_picking::DefaultPickingPlugins;
-
+use scene::camera::PanOrbitCameraPlugin;
+use transform_gizmo_bevy::{ GizmoHotkeys, GizmoOptions, TransformGizmoPlugin };
+use interaction::picking::PickingPlugin;
+use scene::gui::GuiPlugin;
 fn main() {
     App::new()
         .add_plugins((
@@ -16,12 +18,12 @@ fn main() {
                 }),
                 ..default()
             }),
-            interaction::camera_controller::CameraControllerPlugin,
+            // interaction::camera_controller::CameraControllerPlugin,
         ))
+        .add_plugins(PanOrbitCameraPlugin)
         .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
         // .add_plugins(RapierDebugRenderPlugin::default())
         .insert_resource(CurrentMeshEntity::default())
-        .add_plugins(DefaultPickingPlugins)
         .add_systems(Startup, setup)
         .add_systems(Update, (
             scene::plane::add_grid,
@@ -31,6 +33,13 @@ fn main() {
             interaction::mouse::mouse_input_system,
             interaction::keyboard::keyboard_input_system,
         ))
+        .add_plugins(TransformGizmoPlugin)
+        .add_plugins(PickingPlugin)
+        .add_plugins(GuiPlugin)
+        .insert_resource(GizmoOptions {
+            hotkeys: Some(GizmoHotkeys::default()),
+            ..default()
+        })
         .run();
 }
 
