@@ -32,7 +32,8 @@ fn run_camera_controller(
     mouse_button_input: Res<ButtonInput<MouseButton>>,
     key_input: Res<ButtonInput<KeyCode>>,
     mut toggle_cursor_grab: Local<bool>,
-    mut mouse_cursor_grab: Local<bool>,
+    mut left_mouse_cursor_grab: Local<bool>,
+    mut right_mouse_cursor_grab: Local<bool>,
     mut query: Query<(&mut Transform, &mut CameraController, &mut Projection), With<Camera>>
 ) {
     let tool_type: ToolType = get_tool_type().into();
@@ -85,20 +86,29 @@ fn run_camera_controller(
             axis_input.y -= 1.0;
         }
 
-        let mut cursor_grab_change = false;
+        let mut left_cursor_grab_change = false;
+        let mut right_cursor_grab_change = false;
         if key_input.just_pressed(controller.keyboard_key_toggle_cursor_grab) {
             *toggle_cursor_grab = !*toggle_cursor_grab;
-            cursor_grab_change = true;
+            left_cursor_grab_change = true;
         }
-        if mouse_button_input.just_pressed(controller.mouse_key_cursor_grab) {
-            *mouse_cursor_grab = true;
-            cursor_grab_change = true;
+        if mouse_button_input.just_pressed(controller.mouse_left_key_cursor_grab) {
+            *left_mouse_cursor_grab = true;
+            left_cursor_grab_change = true;
         }
-        if mouse_button_input.just_released(controller.mouse_key_cursor_grab) {
-            *mouse_cursor_grab = false;
-            cursor_grab_change = true;
+        if mouse_button_input.just_released(controller.mouse_left_key_cursor_grab) {
+            *left_mouse_cursor_grab = false;
+            left_cursor_grab_change = true;
         }
-        let cursor_grab = *mouse_cursor_grab || *toggle_cursor_grab;
+        if mouse_button_input.just_pressed(controller.mouse_right_key_cursor_grab) {
+            right_cursor_grab_change = true;
+            *right_mouse_cursor_grab = true;
+        }
+        if mouse_button_input.just_released(controller.mouse_right_key_cursor_grab) {
+            right_cursor_grab_change = true;
+            *right_mouse_cursor_grab = false;
+        }
+        let left_cursor_grab = *left_mouse_cursor_grab || *toggle_cursor_grab;
 
         // Apply movement update
         if axis_input != Vec3::ZERO {
@@ -123,8 +133,8 @@ fn run_camera_controller(
             controller.velocity.z * dt * forward;
 
         // Handle cursor grab
-        if cursor_grab_change {
-            if cursor_grab {
+        if left_cursor_grab_change || right_cursor_grab_change {
+            if left_cursor_grab || *right_mouse_cursor_grab {
                 for mut window in &mut windows {
                     if !window.focused {
                         continue;
@@ -140,10 +150,10 @@ fn run_camera_controller(
                 }
             }
         }
-
+        info!("cursor_grab: {} left cursor grad {}", left_cursor_grab, left_cursor_grab_change);
         // Handle mouse input
         let mut mouse_delta = Vec2::ZERO;
-        if cursor_grab {
+        if left_cursor_grab || *right_mouse_cursor_grab {
             for mouse_event in mouse_events.read() {
                 mouse_delta += mouse_event.delta;
             }
@@ -159,12 +169,18 @@ fn run_camera_controller(
                 mouse_delta.y * RADIANS_PER_DOT * controller.sensitivity
             ).clamp(-PI / 2.0, PI / 2.0);
             controller.yaw -= mouse_delta.x * RADIANS_PER_DOT * controller.sensitivity;
-            transform.rotation = Quat::from_euler(
-                EulerRot::ZYX,
-                0.0,
-                controller.yaw,
-                controller.pitch
-            );
+            if left_cursor_grab {
+                transform.rotation = Quat::from_euler(
+                    EulerRot::ZYX,
+                    0.0,
+                    controller.yaw,
+                    controller.pitch
+                );
+            }
+            if *right_mouse_cursor_grab {
+                transform.translation.x -= mouse_delta.x * 0.01;
+                transform.translation.z -= mouse_delta.y * 0.01;
+            }
         }
     }
 }
